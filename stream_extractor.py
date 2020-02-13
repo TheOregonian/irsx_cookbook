@@ -25,7 +25,7 @@ class StreamExtractor(object):
 
 
 
-    def run_parts(self, this_capture_sked, parsed_sked, sked, taxpayer_name="", tax_period=""):
+    def run_parts(self, this_capture_sked, parsed_sked, sked, taxpayer_name=""):
         for part_key in this_capture_sked['parts'].keys():
             stream_key = this_capture_sked['parts'][part_key]['stream_key']
             this_stream = self.output_streams[stream_key]
@@ -42,7 +42,6 @@ class StreamExtractor(object):
             row_data['source'] = part_key
             row_data['year'] = self.year
             row_data['taxpayer_name'] = taxpayer_name
-            row_data['tax_period'] = tax_period
 
 
             for capture_key in capture_dict.keys():
@@ -69,7 +68,7 @@ class StreamExtractor(object):
 
 
 
-    def run_groups(self, this_capture_sked, parsed_sked, sked, taxpayer_name="", tax_period=""):
+    def run_groups(self, this_capture_sked, parsed_sked, sked, taxpayer_name=""):
         for group_key in this_capture_sked['groups'].keys():
             stream_key = this_capture_sked['groups'][group_key]['stream_key']
             this_stream = self.output_streams[stream_key]
@@ -87,7 +86,6 @@ class StreamExtractor(object):
                 row_data['source'] = group_key
                 row_data['year'] = self.year
                 row_data['taxpayer_name'] = taxpayer_name
-                row_data['tax_period'] = tax_period
 
                 for capture_key in capture_dict.keys():
                     if capture_key == 'stream_key':
@@ -127,7 +125,7 @@ class StreamExtractor(object):
                 ## We've gone through who whole group -- write it to file
                 this_stream['writer'].writerow(row_data)
 
-    def run_filing(self, filing, taxpayer_name="", tax_period=""):
+    def run_filing(self, filing, taxpayer_name=""):
 
         parsed_filing = self.xml_runner.run_filing(filing)
         schedule_list = parsed_filing.list_schedules()
@@ -155,7 +153,7 @@ class StreamExtractor(object):
                 except KeyError:
                      skip_groups = True
                 if not skip_groups:
-                    self.run_groups(this_capture_sked, parsed_sked, sked, taxpayer_name=taxpayer_name, tax_period=tax_period)
+                    self.run_groups(this_capture_sked, parsed_sked, sked, taxpayer_name=taxpayer_name)
 
 
                 ### Nonrepeating schedule parts 
@@ -165,6 +163,6 @@ class StreamExtractor(object):
                 except KeyError:
                      skip_parts = True
                 if not skip_parts:
-                    self.run_parts(this_capture_sked, parsed_sked, sked, taxpayer_name=taxpayer_name, tax_period=tax_period)
+                    self.run_parts(this_capture_sked, parsed_sked, sked, taxpayer_name=taxpayer_name)
 
                 
